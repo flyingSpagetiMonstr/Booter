@@ -162,6 +162,9 @@ Restart:
     JMP DWORD PTR DS:[BX]
 ; ==============================================
 Startsystem:
+    ; copy the code of Trans to 0200H, then jmp there
+    ; (since the current code is at 07C00H, 
+    ; u can't directly read C to 07C00H)
     MOV AX, 0
     MOV ES, AX
     MOV DI, 0200H
@@ -172,7 +175,9 @@ Startsystem:
 
     MOV AX, 0200H
     JMP AX
+
 Trans:
+    ; read C to 07C00H
     MOV AX, 0
     MOV ES, AX
     MOV BX, 7C00H
@@ -209,9 +214,6 @@ CLOCK:
 
 
     LAPSE:
-
-CALL TEST_CODE
-
         MOV SI, ScanCode - Bootor + 7C00H
 
         CMP BYTE PTR DS:[SI], 1 ; 01H: Esc
@@ -247,9 +249,7 @@ CALL TEST_CODE
         ; < ScanCode[1]: last code, ScanCode[0]: current code 
         ; < Esc: 01H; F1: 3BH
         Color      DB 00000010B
-; test code>
-TEST_TMP        DB 0
-; <test code
+        
         Lapstart:
 
         ; Set frame color
@@ -272,14 +272,12 @@ TEST_TMP        DB 0
             CALL PrtCmAjust
             LOOP TIME_S
 
+        CALL DELAY
         POP SI
         CALL SPIN
         PUSH SI
 
-        
-
         JMP SHORT LAPSE
-        ; JMP LAPSE
 
     LapsEnd:
     POP SI
@@ -542,7 +540,8 @@ SPIN:
     PUSH BP
 
     INC SI
-    CMP SI, 0FFFFH / 32
+    ; CMP SI, 0FFFFH / 32
+    CMP SI, 1
     JNE NO_SPIN
 
     MOV BH, 0
@@ -912,43 +911,6 @@ Get_str:
     POP BX
     POP AX
     RET ; Get_str
-; ==============================================
-TEST_CODE:
-    ; test code> #######################################
-    PUSH SI
-    PUSH AX
-    PUSH BX
-    PUSH DX
-
-    MOV SI, TEST_TMP - Bootor + 7C00H
-    INC BYTE PTR DS:[SI]
-    
-    MOV AH, 2 ; TO SET CURSOR
-    MOV BH, 0
-    MOV DH, 1
-    MOV DL, 1
-    INT 10H
-
-    MOV AL, DS:[SI]
-    MOV AH, 9 ; PUTCHAR()
-    MOV CX, 1
-    INT 10H
-
-    CALL DELAY
-    
-    ; CMP BYTE PTR DS:[SI], 0EFH
-    ; JNE NO_REBOOT
-    ; MOV BX, ResAddr - Bootor + 7C00H
-    ; JMP DWORD PTR DS:[BX]
-    ; NO_REBOOT: 
-
-    POP DX
-    POP BX
-    POP AX
-    POP SI
-    RET
-; <test code #######################################
-; PUT_CHAR:
 
 CODES ENDS
 END start
