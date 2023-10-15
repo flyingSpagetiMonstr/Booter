@@ -12,5 +12,4 @@ Todo_s:
 - add Esc for time setting func
 
 Log_s:
-- [23/10/15 11:44] after several hours of struggle/test in vain, the bug of CLOCK function finnaly get fixed by simply adding a CALL DELAY in the display loop. NOW I STILL DON'T KNOW WHY IT WORKS THOUGH. 
- 
+- [23/10/15 11:44] after several hours of struggle/test in vain, the bug of CLOCK function finnaly get fixed by simply adding a CALL DELAY in the display loop. THOUGH I STILL DON'T KNOW WHY THIS WORKS, NOW. 
