@@ -17,7 +17,7 @@ start:
     MOV DH, 0 ; surface
     MOV CL, 1 ; sector
     MOV CH, 0 ; track
-    MOV AL, 4 ; sector num
+    MOV AL, 4 ; sector num; 4 sectors = 4*512 B = 2*1024 B; 2KB in machine code
     MOV AH, 3 ; write disk
     INT 13H
 
@@ -26,6 +26,8 @@ start:
 
 ;=================================================================================
 ; IP == 7C00H + , CS == 0, DS == 0 
+; ORG 7C00H
+
 Bootor:
     JMP NEAR PTR Bootor_start
     ; l = 16
@@ -135,7 +137,6 @@ Bootor:
         ADD AX, (MenuEnd - Menu) / 5
         LOOP MULT
     ; ADD AX, (MenuEnd - Menu) / 5
-
     MOV SI, Menu - Bootor + 7C00H
     ADD SI, AX
     MOV BH, 0
@@ -154,6 +155,7 @@ Bootor:
     MOV DI, JumpTable - Bootor + 7C00H
     ADD BP, BP
     CALL DS:[BP + DI] ; to the selected function
+
     JMP NEAR PTR Bootor_start
     RET
 ; ==============================================
